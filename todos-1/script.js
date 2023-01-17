@@ -44,7 +44,7 @@ saveTodoButton.onclick = function () {
 
 let todosCount = todoList.length;
 
-function onTodoStatusChange( checkboxId, labelId ) {
+function onTodoStatusChange( checkboxId, labelId, todoId ) {
     let checkboxElement =  document.getElementById( checkboxId );
     console.log( checkboxElement.checked );
 
@@ -56,6 +56,23 @@ function onTodoStatusChange( checkboxId, labelId ) {
         labelElement.classList.remove( "checked" );
     }  // instead use toggle as below  */
     labelElement.classList.toggle( "checked" );
+
+    let todoObjectIndex = todoList.findIndex( function( eachTodo ) {
+        let eachTodoId = "todo" + eachTodo.uniqueNo;
+        if (  eachTodoId === todoId ) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    } );
+    let todoObject = todoList[todoObjectIndex];
+    if ( todoObject.isChecked === true ) {
+        todoObject.isChecked = false;
+    }
+    else {
+        todoObject.isChecked = true;
+    }
 }
 
 function onDeleteTodo( todoId ) {
@@ -88,6 +105,10 @@ function createAndAppendTodo(todo) {
     let inputElement = document.createElement( "input" );
     inputElement.type = "checkbox";
     inputElement.id = checkboxId;
+    inputElement.checked = todo.isChecked;
+    inputElement.onclick = function() {
+        
+    }
     inputElement.classList.add( "checkbox-input" );
     todoElement.appendChild( inputElement );
     
@@ -100,10 +121,13 @@ function createAndAppendTodo(todo) {
     labelElement.setAttribute( "for", checkboxId );
     labelElement.id = labelId;
     inputElement.onclick = function () {
-        onTodoStatusChange( checkboxId, labelId );
+        onTodoStatusChange( checkboxId, labelId,todoId );
     };
     labelElement.classList.add( "checkbox-label" );
     labelElement.textContent = todo.text;
+    if ( todo.isChecked === true ) {
+        labelContainer.classList.add( "checked" );
+    }
     labelContainer.appendChild( labelElement );
 
     let deleteIconContainer = document.createElement( "div" );
@@ -128,7 +152,8 @@ function onAddTodo() {
     todosCount += 1;
     let newTodo = {
         text: userInputValue,
-        uniqueNo: todosCount
+        uniqueNo: todosCount,
+        isChecked: false
     };
     todoList.push( newTodo );
     console.log( todoList );
